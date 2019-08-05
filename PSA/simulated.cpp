@@ -36,6 +36,7 @@ void pareto_simulated_anneling()
                 /* Se for dominate atualiza nas atuais e coloca no conjunto de solução fronteiras */
                 list_aux.push_back(psa_solution_neighbor);
                 add_cloud_frontier(psa_solution_neighbor);
+                std::cout << "melhor achado" << '\n';
             }else{
                 /* Caso não, ajusta escalas */
                 adjusts_scale(psa_solution_neighbor, *it);
@@ -43,11 +44,12 @@ void pareto_simulated_anneling()
                 if (accept(*it, psa_solution_neighbor, psa_current_temperature))
                 {
                     list_aux.push_back(psa_solution_neighbor);
-                    std::cout << "sim" << '\n';
+                    // std::cout << "sim" << '\n';
                 }
                 else
                 {
                     list_aux.push_back(*it);
+                    std::cout << "nao" << '\n';
                 }
             }
         }
@@ -144,11 +146,11 @@ void adjusts_scale(Solution& new_s, Solution base_s)
 
 bool accept(Solution s1, Solution s2, double temp)
 {
-    double maximo = max((s2.scale_wcrt*(s1.wcrt-s2.wcrt)/temp),(s2.scale_time_mean_burst*(s1.time_mean_burst-s2.time_mean_burst)/temp));
+    double maximo = max(((s1.wcrt-s2.wcrt)/(temp*s2.scale_wcrt)),((s1.time_mean_burst-s2.time_mean_burst)/(temp*s2.scale_time_mean_burst)));
     // minimo = min<double>(minimo, (s2.scale_time_mean_burst*(s1.time_mean_burst-s2.time_mean_burst)/temp));
     double sort = ((double)rand()/RAND_MAX);
     // std::cout << sort << " = contra = " << min<double>(1,exp(maximo)) << '\n';
-    return (min<double>(1,exp(maximo)) <= sort);
+    return ((min<double>(1,exp(maximo))) > sort);
 }
 
 bool is_dominat(Solution s1, Solution s2)
@@ -240,25 +242,25 @@ int main(int argc, char const *argv[])
     // }
 
     psa_solution_first.candb_solution = frames;
-    psa_starting_temperature = 10000;
+    psa_starting_temperature = 4000;
     psa_final_temperature     = 10;
-    psa_alpha_temperature    = 0.98;
+    psa_alpha_temperature    = 0.99;
     psa_alpha_scale          = 0.1;
     length_cloud             = 100;
-    length_frontier          = 10;
+    length_frontier          = 30;
     pareto_simulated_anneling();
 
     // Solution a,b;
-    // a.scale_wcrt = 1;
-    // a.wcrt = 10;
-    // a.scale_time_mean_burst = 1;
-    // a.time_mean_burst = 10;
+    // a.scale_wcrt = 10;
+    // a.wcrt = 300;
+    // a.scale_time_mean_burst = 10;
+    // a.time_mean_burst = 300;
     // b.scale_wcrt = 10;
     // b.wcrt = 0;
     // b.scale_time_mean_burst = 10;
     // b.time_mean_burst = 0;
-    //
-    // std::cout << accept(b,a,800) << '\n';
+    // //
+    // std::cout << accept(b,a,10) << '\n';
 
     // Simulator_CAN sim(frames, length);
     // sim.run_simulation(100);
@@ -268,4 +270,4 @@ int main(int argc, char const *argv[])
     //           << "\nDeadLines > " << sim.deadlines << '\n';
 
     return 0;
-}
+  }
