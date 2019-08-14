@@ -64,6 +64,7 @@ void     random_scale(Solution& solucao);
 void     run_simulation(Solution& solucao);
 void     add_cloud_frontier(Solution new_s);
 void     adjusts_scale(Solution& new_s, Solution base_s);
+void     write_frontier_solutions(std::list<Solution> frontier);
 bool     is_dominat(Solution s1, Solution s2);
 bool     accept(Solution s1, Solution s2, double temp);
 Solution random_neighbor(Solution base);
