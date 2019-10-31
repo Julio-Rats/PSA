@@ -39,19 +39,19 @@ Variaveis de controle do simulated anneling
 *******************************************************************/
 
 double    psa_starting_temperature;     // Temperatura inicial do PSA
-double    psa_final_temperature;         // Temperatura final do PSA
+double    psa_final_temperature;        // Temperatura final do PSA
 double    psa_alpha_temperature;        // Escalar multiplicativo para decaimento da Temperatura
 double    psa_alpha_scale;              // Escalar multiplicativo para função objetiva
-double    psa_number_neighbor;           
+double    psa_number_neighbor;
 
 Solution  psa_solution_neighbor;        // Solução Vizinho da atual
-Solution  psa_solution_first;            // Solução atual do PSA
+Solution  psa_solution_first;           // Solução atual do PSA
 
-unsigned int        length_frames;      // Numero de frames na solução
+u_int16_t           length_frames;      // Numero de frames na solução
 unsigned int        length_cloud;       // Numero de soluções na nuvem de soluções
 unsigned int        length_frontier;    // Numero de soluções na nuvem de soluções
-std::vector<Solution> cloud_solutions;    // Conjunto com todas as soluções atuais
-std::vector<Solution> cloud_frontier;     // Conjunto com todas as soluções "melhores"
+std::vector<Solution> cloud_solutions;  // Conjunto com todas as soluções atuais
+std::vector<Solution> cloud_frontier;   // Conjunto com todas as soluções "melhores"
 
 Simulator_CAN* simulator;
 

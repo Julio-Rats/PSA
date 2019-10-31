@@ -13,7 +13,7 @@ void pareto_simulated_anneling()
 
     while(psa_current_temperature > psa_final_temperature)
     {
-        printf("Temperatura \t %.2f\n", psa_current_temperature);
+        // printf("Temperatura \t %.2f\n", psa_current_temperature);
         for (size_t i = 0; i < psa_number_neighbor; i++)
         {
           list_aux.clear();
@@ -31,7 +31,9 @@ void pareto_simulated_anneling()
                   list_aux.push_back(psa_solution_neighbor);
                   add_cloud_frontier(psa_solution_neighbor);
                   // std::cout << "melhor achado" << '\n';
-              }else{
+              }
+              else
+              {
                   /* Caso não, ajusta escalas */
                   adjusts_scale(psa_solution_neighbor, *it);
                   /* Faça a probabilidade, para poder ser aceita como atual (Não adiciona nas fronteiras)*/
@@ -252,9 +254,9 @@ vector<vector<Solution>> get_frontiers()
     return frontiers;
 }
 
-void write_arq(vector<vector<Solution>> frontiers, const char *path)
+void write_arq(vector<vector<Solution>> frontiers, const char *path1, const char *path2)
 {
-    FILE* archive_front = fopen(path,"w");
+    FILE* archive_front = fopen(path1,"w");
     if (!archive_front)
     {
         printf("\n\nERRO ao abrir o aquivo fronteiras.txt\n\n");
@@ -267,7 +269,30 @@ void write_arq(vector<vector<Solution>> frontiers, const char *path)
           fprintf(archive_front, "%f\t%f\t%f\t%d\n", person.wcrt, person.frames_burst,
                     person.time_mean_burst, i);
       }
-    fclose(archive_front);
+      fclose(archive_front);
+
+      for (size_t i = 0; i < frontiers[0].size(); i++)
+      {
+          char path_results[64]="";
+          sprintf(path_results, "%s-%d.txt", path2, i);
+
+          FILE* out = fopen(path_results, "w+");
+          if (!out)
+          {
+              std::cout << "\n[ERRO:] Ao criar arquivo de resultados" << "\n\n";
+              exit(10);
+          }
+          fprintf(out, "WCRT\t%lf\n",            frontiers[0][i].wcrt);
+          fprintf(out, "TIME BURST\t%lf\n",      frontiers[0][i].time_mean_burst);
+          fprintf(out, "SIZE BURST\t%lf\n\n",    frontiers[0][i].frames_burst);
+          fprintf(out, "ID_MSG\tCYCLE\tDEADLINE\tSTART_DLY\tPAYLOAD\n");
+          for (size_t j = 0; j < length_frames; j++)
+              fprintf(out,"%u\t%lf\t%lf\t%lf\t%u\n", frontiers[0][i].candb_solution[j].id, frontiers[0][i].candb_solution[j].cycle_time,
+                      frontiers[0][i].candb_solution[j].deadline_time, frontiers[0][i].candb_solution[j].delay_time,
+                      frontiers[0][i].candb_solution[j].payload_frame);
+
+          fclose(out);
+      }
 }
 
 int main(int argc, char const *argv[])
@@ -282,16 +307,17 @@ int main(int argc, char const *argv[])
     Frame_CAN* frames = get_CANDB(arq, length_frames);
 
     psa_solution_first.candb_solution = frames;
-    psa_starting_temperature = 9000;
-    psa_final_temperature     = 10;
-    psa_alpha_temperature    = 0.9;
+    psa_starting_temperature = 8000;
+    psa_final_temperature    = 10;
+    psa_alpha_temperature    = 0.95;
     psa_alpha_scale          = 0.15;
     psa_number_neighbor      = 10;
-    length_cloud             = 200;
-    length_frontier          = 350;
+    length_cloud             = 80;
+    length_frontier          = 100;
+
     pareto_simulated_anneling();
 
-    write_arq(get_frontiers(),argv[2]);
+    write_arq(get_frontiers(), argv[2], argv[3]);
 
     return 0;
   }
